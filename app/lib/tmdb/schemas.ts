@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const searchResultSchema = z.object({
+const searchResultSchema = z.object({
   id: z.number().int(),
   title: z.string(),
   original_title: z.string().optional(),
@@ -38,7 +38,6 @@ export const movieDetailsSchema = z.object({
     .optional(),
 });
 
-export type TmdbSearchResult = z.infer<typeof searchResultSchema>;
 export type TmdbSearchResponse = z.infer<typeof searchResponseSchema>;
 export type TmdbMovieDetails = z.infer<typeof movieDetailsSchema>;
 

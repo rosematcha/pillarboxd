@@ -3,7 +3,6 @@ import {
   parseDiaryCsv,
   parseLikedFilmsCsv,
   parseReviewsCsv,
-  type ImportedEntry,
 } from "~/lib/letterboxd";
 import { resolveFilmByNameYear, type Film } from "~/lib/films.server";
 import { createLogEntry } from "~/lib/logs.server";
@@ -62,5 +61,3 @@ export async function importLetterboxdCsvs(
 
   return { imported, unmatched: [...unmatched.values()] };
 }
-
-export type { ImportedEntry };

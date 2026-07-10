@@ -7,7 +7,7 @@ import { movieDetailsToFilm } from "~/lib/tmdb/schemas";
 
 export type Film = typeof films.$inferSelect;
 
-export async function getFilmByTmdbId(tmdbId: number): Promise<Film | null> {
+async function getFilmByTmdbId(tmdbId: number): Promise<Film | null> {
   const [film] = await db()
     .select()
     .from(films)

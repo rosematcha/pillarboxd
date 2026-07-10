@@ -8,7 +8,7 @@ import {
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
-export class TmdbError extends Error {
+class TmdbError extends Error {
   constructor(
     message: string,
     public readonly status?: number,

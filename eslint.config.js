@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import globals from "globals";
 import prettier from "eslint-config-prettier";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import react from "eslint-plugin-react";
@@ -82,6 +83,10 @@ export default tseslint.config(
   {
     files: ["**/*.{js,cjs,mjs}"],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    files: ["scripts/**/*.js"],
+    languageOptions: { globals: globals.node },
   },
   prettier,
 );

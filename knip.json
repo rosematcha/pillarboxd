@@ -1,0 +1,5 @@
+{
+  "entry": ["scripts/migrate.js"],
+  "project": ["app/**/*.{ts,tsx}", "scripts/**/*.js"],
+  "ignoreDependencies": ["tailwindcss"]
+}
