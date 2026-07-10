@@ -1,13 +1,12 @@
-import { data } from "react-router";
+import { Link } from "react-router";
 
-import { LetterboxdImport } from "~/components/letterboxd-import";
+import { buttonStyles } from "~/components/button";
 import { Nav } from "~/components/nav";
 import { requireSession } from "~/lib/auth/auth.server";
-import { handleImportAction } from "~/lib/import-action.server";
 import type { Route } from "./+types/settings.data";
 
 export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: "Import & export — pillarboxd" }];
+  return [{ title: "Import and export | pillarboxd" }];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -16,42 +15,48 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { user: { username: username ?? "" } };
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const { result, error, status } = await handleImportAction(request);
-  return data({ result, error }, { status });
-}
-
-export default function SettingsData({
-  loaderData,
-  actionData,
-}: Route.ComponentProps) {
+export default function SettingsData({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-bold">Import &amp; export</h1>
-
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold">Import from Letterboxd</h2>
-          <div className="mt-4">
-            <LetterboxdImport
-              result={actionData?.result ?? null}
-              error={actionData?.error ?? null}
-            />
+      <main className="gap-step px-block py-step mx-auto flex max-w-[42rem] flex-col sm:py-12">
+        <h1 className="font-heading text-xl">Your data</h1>
+        <section className="gap-block border-border pb-step flex flex-col border-b">
+          <div className="gap-tight flex flex-col">
+            <h2 className="font-heading text-lg">Import</h2>
+            <p className="text-muted max-w-[70ch] text-sm">
+              Move your Letterboxd diary, ratings, reviews, and likes into
+              pillarboxd.
+            </p>
           </div>
+          <Link
+            to="/import"
+            className={buttonStyles("secondary", "self-start")}
+          >
+            Open Letterboxd import
+          </Link>
         </section>
-
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold">Export your data</h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Your data is yours. Download everything, any time.
-          </p>
-          <div className="mt-4 flex gap-4 text-sm">
-            <a href="/export/json" className="underline" download>
-              JSON (full fidelity)
+        <section className="gap-block flex flex-col">
+          <div className="gap-tight flex flex-col">
+            <h2 className="font-heading text-lg">Export</h2>
+            <p className="text-muted max-w-[70ch] text-sm">
+              Download your complete history whenever you want.
+            </p>
+          </div>
+          <div className="gap-related flex flex-wrap">
+            <a
+              href="/export/json"
+              className={buttonStyles("secondary")}
+              download
+            >
+              Download JSON
             </a>
-            <a href="/export/csv" className="underline" download>
-              CSV (Letterboxd-compatible)
+            <a
+              href="/export/csv"
+              className={buttonStyles("secondary")}
+              download
+            >
+              Download CSV
             </a>
           </div>
         </section>

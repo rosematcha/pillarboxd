@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
+import { AuthShell } from "~/components/auth-shell";
+import { Button } from "~/components/button";
+import { Field, Input } from "~/components/input";
 import { authClient } from "~/lib/auth/auth.client";
 import { formString } from "~/lib/form";
 import type { Route } from "./+types/login";
 
 export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: "Log in — pillarboxd" }];
+  return [{ title: "Log in | pillarboxd" }];
 }
 
 export default function Login() {
@@ -37,54 +40,47 @@ export default function Login() {
   };
 
   return (
-    <main className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="text-2xl font-bold">Log in</h1>
+    <AuthShell title="Log in" description="Return to your diary.">
       <form
         method="post"
-        className="mt-6 flex flex-col gap-4"
+        className="gap-block flex flex-col"
         onSubmit={(event) => {
           event.preventDefault();
           void submit(event.currentTarget);
         }}
       >
-        <label className="flex flex-col gap-1 text-sm">
-          Username
-          <input
+        <Field label="Username" htmlFor="username">
+          <Input
+            id="username"
             name="username"
             required
             autoComplete="username"
-            className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
           />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Password
-          <input
+        </Field>
+        <Field label="Password" htmlFor="password">
+          <Input
+            id="password"
             name="password"
             type="password"
             required
             autoComplete="current-password"
-            className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
           />
-        </label>
+        </Field>
         {error !== null && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="text-error text-sm">
             {error}
           </p>
         )}
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded bg-gray-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-gray-900"
-        >
-          {pending ? "Signing in…" : "Log in"}
-        </button>
+        <Button type="submit" loading={pending} loadingLabel="Signing in">
+          Log in
+        </Button>
       </form>
-      <p className="mt-4 text-sm">
+      <p className="text-muted text-sm">
         No account?{" "}
-        <Link to="/register" className="underline">
+        <Link to="/register" className="font-medium">
           Register
         </Link>
       </p>
-    </main>
+    </AuthShell>
   );
 }

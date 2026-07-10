@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 
+import { ActivityItem } from "~/components/activity-item";
+import { buttonStyles } from "~/components/button";
+import { EmptyState } from "~/components/empty-state";
 import { Nav } from "~/components/nav";
 import { getSession } from "~/lib/auth/auth.server";
+import { getRecentActivity } from "~/lib/logs.server";
 import type { Route } from "./+types/home";
 
 export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
@@ -15,10 +19,25 @@ export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
+  const [session, activity] = await Promise.all([
+    getSession(request),
+    getRecentActivity(),
+  ]);
   const username = session?.user.username;
   return {
     user: username === null || username === undefined ? null : { username },
+    activity: activity.flatMap((item) =>
+      item.username === null
+        ? []
+        : [
+            {
+              ...item,
+              createdAt: item.createdAt.toISOString(),
+              username: item.username,
+              reviewed: item.review !== null,
+            },
+          ],
+    ),
   };
 }
 
@@ -26,34 +45,49 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="mx-auto max-w-2xl px-4 py-16">
-        <h1 className="text-3xl font-bold">pillarboxd</h1>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">
-          A free, open-source, federated film diary. Log what you watch, rate
-          it, review it, and take your data with you — always.
-        </p>
-        <div className="mt-8 flex gap-4">
+      <main className="gap-step px-block py-step mx-auto flex max-w-[42rem] flex-col sm:py-12">
+        <header className="gap-block border-border pb-section flex flex-col border-b">
+          <div className="gap-tight flex flex-col">
+            <h1 className="font-heading text-xl">Recent activity</h1>
+            <p className="text-muted max-w-[70ch] text-sm">
+              Films logged and reviewed on this instance.
+            </p>
+          </div>
           {loaderData.user === null ? (
-            <>
-              <Link
-                to="/register"
-                className="rounded bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-gray-900"
-              >
+            <div className="gap-related flex flex-wrap">
+              <Link to="/register" className={buttonStyles("primary")}>
                 Create an account
               </Link>
-              <Link to="/login" className="px-4 py-2 underline">
+              <Link to="/login" className={buttonStyles("secondary")}>
                 Log in
               </Link>
-            </>
+            </div>
           ) : (
             <Link
               to={`/u/${loaderData.user.username}`}
-              className="rounded bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-gray-900"
+              className={buttonStyles("secondary", "self-start")}
             >
               Your diary
             </Link>
           )}
-        </div>
+        </header>
+        {loaderData.activity.length === 0 ? (
+          <EmptyState
+            action={
+              <Link to="/films/search" className={buttonStyles("primary")}>
+                Find a film
+              </Link>
+            }
+          >
+            No one has logged a film yet. Start the diary for this instance.
+          </EmptyState>
+        ) : (
+          <div>
+            {loaderData.activity.map((item) => (
+              <ActivityItem key={item.id} {...item} />
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

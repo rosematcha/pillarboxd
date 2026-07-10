@@ -1,13 +1,12 @@
-import { Link, data } from "react-router";
+import { Link } from "react-router";
 
-import { LetterboxdImport } from "~/components/letterboxd-import";
+import { buttonStyles } from "~/components/button";
 import { Nav } from "~/components/nav";
 import { requireSession } from "~/lib/auth/auth.server";
-import { handleImportAction } from "~/lib/import-action.server";
 import type { Route } from "./+types/welcome";
 
 export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: "Welcome — pillarboxd" }];
+  return [{ title: "Welcome | pillarboxd" }];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -15,47 +14,25 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { user: { username: session.user.username ?? "" } };
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const { result, error, status } = await handleImportAction(request);
-  return data({ result, error }, { status });
-}
-
-export default function Welcome({
-  loaderData,
-  actionData,
-}: Route.ComponentProps) {
+export default function Welcome({ loaderData }: Route.ComponentProps) {
   const profileHref = `/u/${loaderData.user.username}`;
-  const imported =
-    actionData?.result !== null && actionData?.result !== undefined;
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-bold">Welcome to pillarboxd</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Bring your history over from Letterboxd, or skip and start fresh. You
-          can always import later from settings.
-        </p>
-
-        <div className="mt-8">
-          <LetterboxdImport
-            result={actionData?.result ?? null}
-            error={actionData?.error ?? null}
-          />
-        </div>
-
-        <div className="mt-10 flex items-center gap-4 text-sm">
-          <Link
-            to={profileHref}
-            className="rounded bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-gray-900"
-          >
-            {imported ? "Continue to your profile" : "Go to your profile"}
+      <main className="gap-step px-block mx-auto flex max-w-[42rem] flex-col py-12">
+        <header className="gap-tight flex flex-col">
+          <h1 className="font-heading text-xl">Welcome to pillarboxd</h1>
+          <p className="text-muted max-w-[70ch]">
+            Start a new diary or bring your Letterboxd history with you.
+          </p>
+        </header>
+        <div className="gap-related flex flex-wrap items-center">
+          <Link to="/import" className={buttonStyles("primary")}>
+            Import from Letterboxd
           </Link>
-          {!imported && (
-            <Link to={profileHref} className="underline">
-              Skip for now
-            </Link>
-          )}
+          <Link to={profileHref} className={buttonStyles("secondary")}>
+            Start fresh
+          </Link>
         </div>
       </main>
     </>

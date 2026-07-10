@@ -6,5 +6,10 @@
 /.react-router/
 /build/
 
-# Personal Letterboxd exports used for import testing
-/letterboxd-*.zip
+# Personal exports and archives (not committed)
+*.zip
+
+# Local design tooling context and iteration artifacts (not committed)
+/PRODUCT.md
+/DESIGN.md
+/.scratch/

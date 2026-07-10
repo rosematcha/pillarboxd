@@ -1,5 +1,8 @@
-import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { Form, Link, NavLink, useNavigate } from "react-router";
 
+import { Button, buttonStyles } from "~/components/button";
+import { Input } from "~/components/input";
 import { authClient } from "~/lib/auth/auth.client";
 
 export interface NavUser {
@@ -8,49 +11,87 @@ export interface NavUser {
 
 export function Nav({ user }: { user: NavUser | null }): React.ReactElement {
   const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
 
   const signOut = async (): Promise<void> => {
+    setSigningOut(true);
     await authClient.signOut();
     await navigate("/", { viewTransition: false });
   };
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
+    [
+      "text-sm font-medium transition-colors duration-[var(--duration-feedback)] ease-feedback hover:text-text",
+      isActive ? "text-accent" : "text-muted",
+    ].join(" ");
+
   return (
-    <nav className="flex items-center gap-4 border-b border-gray-200 px-4 py-3 dark:border-gray-800">
-      <Link to="/" className="font-semibold">
+    <nav
+      aria-label="Main"
+      className="gap-block border-border px-block py-related flex flex-wrap items-center border-b"
+    >
+      <Link
+        to="/"
+        className="font-heading text-text hover:text-accent text-lg tracking-[-0.01em]"
+      >
         pillarboxd
       </Link>
-      <Link to="/films/search" className="text-sm">
-        Search
-      </Link>
-      <span className="flex-1" />
-      {user === null ? (
-        <>
-          <Link to="/login" className="text-sm">
-            Log in
-          </Link>
-          <Link to="/register" className="text-sm">
-            Register
-          </Link>
-        </>
-      ) : (
-        <>
-          <Link to={`/u/${user.username}`} className="text-sm">
-            @{user.username}
-          </Link>
-          <Link to="/settings/data" className="text-sm">
-            Import/Export
-          </Link>
-          <button
-            type="button"
-            className="text-sm underline"
-            onClick={() => {
-              void signOut();
-            }}
-          >
-            Sign out
-          </button>
-        </>
-      )}
+      <Form
+        method="get"
+        action="/films/search"
+        role="search"
+        className="order-3 w-full sm:order-none sm:max-w-56 sm:flex-1"
+      >
+        <Input
+          type="search"
+          name="q"
+          aria-label="Search films"
+          placeholder="Search films"
+          className="w-full"
+        />
+      </Form>
+      <div className="gap-block ml-auto flex items-center">
+        <NavLink to="/" end className={navLinkClass}>
+          Activity
+        </NavLink>
+        <NavLink to="/films/search" className={navLinkClass}>
+          Search
+        </NavLink>
+        {user === null ? (
+          <>
+            <NavLink to="/login" className={navLinkClass}>
+              Log in
+            </NavLink>
+            <Link
+              to="/register"
+              className={buttonStyles("primary", "px-related py-1")}
+            >
+              Register
+            </Link>
+          </>
+        ) : (
+          <>
+            <NavLink to={`/u/${user.username}`} className={navLinkClass}>
+              @{user.username}
+            </NavLink>
+            <NavLink to="/settings/data" className={navLinkClass}>
+              Data
+            </NavLink>
+            <Button
+              type="button"
+              variant="secondary"
+              loading={signingOut}
+              loadingLabel="Signing out"
+              className="px-related py-1"
+              onClick={() => {
+                void signOut();
+              }}
+            >
+              Sign out
+            </Button>
+          </>
+        )}
+      </div>
     </nav>
   );
 }

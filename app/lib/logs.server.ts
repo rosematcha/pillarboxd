@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 
-import { desc, eq, inArray, sql } from "drizzle-orm";
+import { desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "~/lib/db/client.server";
+import { user } from "~/lib/db/auth-schema";
 import { films, logEntries, logEntryTags, tags } from "~/lib/db/schema";
 import { env } from "~/lib/env.server";
 
@@ -143,4 +144,26 @@ export async function getFilmEntriesForUser(
       sql`${logEntries.watchedOn} desc nulls last`,
       desc(logEntries.createdAt),
     );
+}
+
+export async function getRecentActivity(limit = 20) {
+  const safeLimit = Math.min(50, Math.max(1, limit));
+  return db()
+    .select({
+      id: logEntries.id,
+      createdAt: logEntries.createdAt,
+      rating: logEntries.rating,
+      review: logEntries.review,
+      username: user.username,
+      tmdbId: films.tmdbId,
+      filmTitle: films.title,
+      filmYear: films.year,
+      posterPath: films.posterPath,
+    })
+    .from(logEntries)
+    .innerJoin(user, eq(logEntries.userId, user.id))
+    .innerJoin(films, eq(logEntries.filmId, films.id))
+    .where(isNotNull(user.username))
+    .orderBy(desc(logEntries.createdAt), desc(logEntries.id))
+    .limit(safeLimit);
 }

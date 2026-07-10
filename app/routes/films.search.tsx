@@ -1,13 +1,17 @@
 import { Form, Link } from "react-router";
 
+import { Button } from "~/components/button";
+import { EmptyState } from "~/components/empty-state";
+import { Input } from "~/components/input";
 import { Nav } from "~/components/nav";
+import { PosterTile } from "~/components/poster-tile";
 import { getSession } from "~/lib/auth/auth.server";
 import { searchMovies } from "~/lib/tmdb/client.server";
 import { releaseYear } from "~/lib/tmdb/schemas";
 import type { Route } from "./+types/films.search";
 
 export function meta(_args: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: "Search films — pillarboxd" }];
+  return [{ title: "Search films | pillarboxd" }];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -33,60 +37,61 @@ export default function FilmsSearch({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-bold">Search films</h1>
-        <Form method="get" className="mt-4 flex gap-2">
-          <input
-            type="search"
-            name="q"
-            defaultValue={loaderData.query}
-            placeholder="Film title…"
-            className="flex-1 rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-          />
-          <button
-            type="submit"
-            className="rounded bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-gray-900"
-          >
-            Search
-          </button>
-        </Form>
-        <ul className="mt-6 flex flex-col gap-4">
-          {loaderData.results.map((film) => (
-            <li key={film.tmdbId} className="flex gap-4">
-              {film.posterPath !== null && (
-                <img
-                  src={`https://image.tmdb.org/t/p/w92${film.posterPath}`}
-                  alt=""
-                  width={46}
-                  className="self-start rounded"
+      <main className="gap-step px-block py-step mx-auto flex max-w-[64rem] flex-col sm:py-12">
+        <header className="gap-block flex max-w-[42rem] flex-col">
+          <h1 className="font-heading text-xl">Search films</h1>
+          <Form method="get" className="gap-related flex">
+            <Input
+              type="search"
+              name="q"
+              defaultValue={loaderData.query}
+              placeholder="Film title"
+              aria-label="Film title"
+              className="flex-1"
+            />
+            <Button type="submit">Search</Button>
+          </Form>
+        </header>
+        {loaderData.results.length > 0 && (
+          <ul className="gap-related grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6">
+            {loaderData.results.map((film) => (
+              <li key={film.tmdbId} className="gap-tight flex min-w-0 flex-col">
+                <PosterTile
+                  to={`/film/${String(film.tmdbId)}`}
+                  title={film.title}
+                  year={film.year}
+                  posterUrl={
+                    film.posterPath === null
+                      ? null
+                      : `https://image.tmdb.org/t/p/w342${film.posterPath}`
+                  }
                 />
-              )}
-              <div>
                 <Link
                   to={`/film/${String(film.tmdbId)}`}
-                  className="font-semibold underline"
+                  className="text-text hover:text-accent truncate text-sm font-medium"
                 >
                   {film.title}
-                  {film.year !== null && ` (${String(film.year)})`}
                 </Link>
-                <p className="mt-1 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
-                  {film.overview}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-        {loaderData.query !== "" && loaderData.results.length === 0 && (
-          <p className="mt-6 text-gray-600 dark:text-gray-400">No results.</p>
+                {film.year !== null && (
+                  <span className="text-faint text-xs">
+                    {String(film.year)}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
-        <p className="mt-12 text-xs text-gray-500">
-          Film data from{" "}
-          <a href="https://www.themoviedb.org/" className="underline">
-            TMDB
-          </a>
-          . This product uses the TMDB API but is not endorsed or certified by
-          TMDB.
-        </p>
+        {loaderData.query !== "" && loaderData.results.length === 0 && (
+          <EmptyState
+            action={
+              <Link to="/films/search" className="text-sm font-medium">
+                Clear search
+              </Link>
+            }
+          >
+            No films matched “{loaderData.query}”. Try another title.
+          </EmptyState>
+        )}
       </main>
     </>
   );

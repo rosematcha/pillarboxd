@@ -1,16 +1,18 @@
 import { eq } from "drizzle-orm";
 import { Link, data } from "react-router";
 
+import { buttonStyles } from "~/components/button";
+import { DiaryTable } from "~/components/diary-table";
+import { EmptyState } from "~/components/empty-state";
 import { Nav } from "~/components/nav";
 import { getSession } from "~/lib/auth/auth.server";
 import { user } from "~/lib/db/auth-schema";
 import { db } from "~/lib/db/client.server";
-import { ratingToStars } from "~/lib/letterboxd";
 import { getUserDiary } from "~/lib/logs.server";
 import type { Route } from "./+types/profile";
 
 export function meta({ params }: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: `@${params.username} — pillarboxd` }];
+  return [{ title: `@${params.username} | pillarboxd` }];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -58,55 +60,29 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-bold">@{loaderData.profile.username}</h1>
-        <h2 className="mt-8 text-lg font-semibold">Diary</h2>
-        {loaderData.diary.length === 0 ? (
-          <p className="mt-4 text-gray-600 dark:text-gray-400">
-            Nothing logged yet.
+      <main className="gap-step px-block py-step mx-auto flex max-w-[64rem] flex-col sm:py-12">
+        <header className="gap-tight border-border pb-section flex flex-col border-b">
+          <h1 className="font-heading text-xl">
+            @{loaderData.profile.username}
+          </h1>
+          <p className="text-muted text-sm">
+            {String(loaderData.diary.length)}{" "}
+            {loaderData.diary.length === 1 ? "entry" : "entries"} in the diary
           </p>
+        </header>
+        <h2 className="font-heading text-lg">Diary</h2>
+        {loaderData.diary.length === 0 ? (
+          <EmptyState
+            action={
+              <Link to="/films/search" className={buttonStyles("primary")}>
+                Find a film
+              </Link>
+            }
+          >
+            This diary is empty. Search for a film to make the first entry.
+          </EmptyState>
         ) : (
-          <ul className="mt-4 flex flex-col gap-4">
-            {loaderData.diary.map((item) => (
-              <li
-                key={item.id}
-                className="flex gap-4 border-b border-gray-200 pb-4 dark:border-gray-800"
-              >
-                {item.film.posterPath !== null && (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w92${item.film.posterPath}`}
-                    alt=""
-                    width={46}
-                    className="self-start rounded"
-                  />
-                )}
-                <div className="text-sm">
-                  <Link
-                    to={`/film/${String(item.film.tmdbId)}`}
-                    className="font-semibold underline"
-                  >
-                    {item.film.title}
-                    {item.film.year !== null && ` (${String(item.film.year)})`}
-                  </Link>
-                  <p className="mt-1 text-gray-600 dark:text-gray-400">
-                    {item.watchedOn ?? "No date"}
-                    {item.rating !== null &&
-                      ` · ${String(ratingToStars(item.rating))} ★`}
-                    {item.liked && " · ♥"}
-                    {item.rewatch && " · rewatch"}
-                  </p>
-                  {item.review !== null && (
-                    <p className="mt-2 whitespace-pre-wrap">{item.review}</p>
-                  )}
-                  {item.tags.length > 0 && (
-                    <p className="mt-1 text-xs text-gray-500">
-                      {item.tags.map((tag) => `#${tag}`).join(" ")}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <DiaryTable entries={loaderData.diary} />
         )}
       </main>
     </>

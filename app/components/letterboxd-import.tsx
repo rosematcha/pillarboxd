@@ -1,12 +1,15 @@
 import { Form, useNavigation } from "react-router";
 
+import { Button } from "~/components/button";
+import { Dropzone } from "~/components/dropzone";
+import {
+  ImportFlow,
+  ImportResults,
+  ImportStep,
+} from "~/components/import-flow";
+import { Field, Input } from "~/components/input";
 import { LETTERBOXD_RSS_MAX_ENTRIES } from "~/lib/letterboxd-rss";
 import type { ImportResult } from "~/lib/importer.server";
-
-const inputClass =
-  "rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900";
-const buttonClass =
-  "self-start rounded bg-gray-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-gray-900";
 
 /**
  * The two Letterboxd import forms: a quick username import from the public RSS
@@ -27,93 +30,106 @@ export function LetterboxdImport({
       : null;
 
   return (
-    <div className="flex flex-col gap-8">
-      <section>
-        <h3 className="font-semibold">Quick import from your username</h3>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Pulls your {LETTERBOXD_RSS_MAX_ENTRIES} most recent diary entries and
-          reviews straight from your public Letterboxd profile — no download
-          needed. Films are matched exactly by TMDB id.
+    <ImportFlow>
+      <ImportStep
+        title="Choose your source"
+        description="You are moving from Letterboxd. pillarboxd can pull from your public profile or a full export file."
+      />
+      <ImportStep
+        title="Pick quick or full"
+        description="Use quick import to try pillarboxd, or upload an export to bring your full history."
+      >
+        <div className="gap-related flex flex-col">
+          <div className="gap-tight rounded-control border-border p-block flex flex-col border">
+            <h3 className="text-sm font-medium">Quick import</h3>
+            <p className="text-muted text-sm">
+              Pulls your {LETTERBOXD_RSS_MAX_ENTRIES} most recent diary entries
+              and reviews from your public profile.
+            </p>
+          </div>
+          <div className="gap-tight rounded-control border-border p-block flex flex-col border">
+            <h3 className="text-sm font-medium">Full import</h3>
+            <p className="text-muted text-sm">
+              Brings over your complete diary, ratings, reviews, and likes from
+              a Letterboxd export file.
+            </p>
+          </div>
+        </div>
+        <p className="rounded-control bg-bg-subtle p-block text-muted text-sm">
+          <strong className="text-text font-medium">Which do I want?</strong>{" "}
+          Use the full import if you are leaving Letterboxd. Quick import is
+          enough if you just want to try pillarboxd.
         </p>
-        <Form method="post" className="mt-3 flex flex-col gap-3">
-          <input type="hidden" name="intent" value="rss" />
-          <label className="flex flex-col gap-1 text-sm">
-            Letterboxd username
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500">letterboxd.com/</span>
-              <input
+      </ImportStep>
+      <ImportStep title="Add your history">
+        <div className="gap-section grid md:grid-cols-2">
+          <Form method="post" className="gap-block flex flex-col">
+            <input type="hidden" name="intent" value="rss" />
+            <Field label="Letterboxd username" htmlFor="letterboxd-username">
+              <Input
+                id="letterboxd-username"
                 name="username"
                 required
                 autoComplete="off"
                 placeholder="yourname"
-                className={inputClass}
               />
-            </div>
-          </label>
-          <button
-            type="submit"
-            disabled={submittingIntent !== null}
-            className={buttonClass}
+            </Field>
+            <Button
+              type="submit"
+              loading={submittingIntent === "rss"}
+              loadingLabel="Importing recent activity"
+              disabled={submittingIntent !== null}
+              className="self-start"
+            >
+              Import recent activity
+            </Button>
+          </Form>
+          <Form
+            method="post"
+            encType="multipart/form-data"
+            className="gap-block flex flex-col"
           >
-            {submittingIntent === "rss"
-              ? "Importing…"
-              : "Import recent activity"}
-          </button>
-        </Form>
-      </section>
-
-      <section>
-        <h3 className="font-semibold">Full history from your export</h3>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          For your complete history, upload the .zip from Letterboxd (Settings →
-          Data → Export your data). Films are matched by title and year via
-          TMDB.
-        </p>
-        <Form
-          method="post"
-          encType="multipart/form-data"
-          className="mt-3 flex flex-col gap-3"
-        >
-          <input type="hidden" name="intent" value="zip" />
-          <label className="flex flex-col gap-1 text-sm">
-            Letterboxd export (.zip)
-            <input type="file" name="export" accept=".zip,application/zip" />
-          </label>
-          <button
-            type="submit"
-            disabled={submittingIntent !== null}
-            className={buttonClass}
-          >
-            {submittingIntent === "zip" ? "Importing…" : "Import full history"}
-          </button>
-        </Form>
-      </section>
-
-      {error !== null && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
-        </p>
-      )}
-      {result !== null && (
-        <div className="text-sm">
-          <p>Imported {String(result.imported)} entries.</p>
-          {result.unmatched.length > 0 && (
-            <>
-              <p className="mt-2">
-                Couldn&apos;t match {String(result.unmatched.length)} films:
-              </p>
-              <ul className="mt-1 list-inside list-disc text-gray-600 dark:text-gray-400">
-                {result.unmatched.map((film) => (
-                  <li key={`${film.name} ${String(film.year ?? "")}`}>
-                    {film.name}
-                    {film.year !== null && ` (${String(film.year)})`}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+            <input type="hidden" name="intent" value="zip" />
+            <Dropzone
+              id="letterboxd-export"
+              name="export"
+              accept=".zip,application/zip"
+              required
+            />
+            <Button
+              type="submit"
+              loading={submittingIntent === "zip"}
+              loadingLabel="Importing full history"
+              disabled={submittingIntent !== null}
+              className="self-start"
+            >
+              Import full history
+            </Button>
+          </Form>
         </div>
+        {submittingIntent !== null && (
+          <div
+            className="rounded-poster bg-bg-subtle h-1 overflow-hidden"
+            role="progressbar"
+            aria-label="Import in progress"
+          >
+            <div className="bg-accent h-full w-2/3 animate-pulse motion-reduce:animate-none" />
+          </div>
+        )}
+        {error !== null && (
+          <p role="alert" className="text-error text-sm">
+            {error}
+          </p>
+        )}
+      </ImportStep>
+      {result !== null && (
+        <ImportStep title="Results">
+          <ImportResults
+            imported={result.imported}
+            unmatched={result.unmatched}
+          />
+        </ImportStep>
       )}
-    </div>
+    </ImportFlow>
   );
 }

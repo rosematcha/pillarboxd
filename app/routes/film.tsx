@@ -1,6 +1,9 @@
-import { Form, data } from "react-router";
+import { Form, Link, data } from "react-router";
 
+import { Button, buttonStyles } from "~/components/button";
+import { Field, Input, Select, Textarea } from "~/components/input";
 import { Nav } from "~/components/nav";
+import { StarRating } from "~/components/star-rating";
 import { formString } from "~/lib/form";
 import { getSession, requireSession } from "~/lib/auth/auth.server";
 import { getOrCreateFilmByTmdbId } from "~/lib/films.server";
@@ -13,7 +16,7 @@ import {
 import type { Route } from "./+types/film";
 
 export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
-  return [{ title: `${loaderData.film.title} — pillarboxd` }];
+  return [{ title: `${loaderData.film.title} | pillarboxd` }];
 }
 
 function parseTmdbId(raw: string): number {
@@ -92,145 +95,146 @@ export default function Film({ loaderData, actionData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={user} />
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <div className="flex gap-6">
-          {film.posterPath !== null && (
-            <img
-              src={`https://image.tmdb.org/t/p/w342${film.posterPath}`}
-              alt={`Poster for ${film.title}`}
-              width={140}
-              className="self-start rounded"
-            />
-          )}
-          <div>
-            <h1 className="text-2xl font-bold">
-              {film.title}
-              {film.year !== null && (
-                <span className="ml-2 font-normal text-gray-500">
-                  {String(film.year)}
-                </span>
-              )}
-            </h1>
-            {film.directors.length > 0 && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Directed by {film.directors.join(", ")}
-              </p>
-            )}
-            {film.runtimeMinutes !== null && (
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {String(film.runtimeMinutes)} min
-              </p>
-            )}
-            {film.overview !== null && (
-              <p className="mt-3 text-sm">{film.overview}</p>
+      <main className="gap-step px-block py-step mx-auto flex max-w-[64rem] flex-col sm:py-12">
+        <section className="gap-section grid sm:grid-cols-[12rem_1fr]">
+          <div className="rounded-poster bg-bg-subtle aspect-[2/3] w-full max-w-48 overflow-hidden">
+            {film.posterPath !== null && (
+              <img
+                src={`https://image.tmdb.org/t/p/w342${film.posterPath}`}
+                alt={`Poster for ${film.title}`}
+                className="size-full object-cover"
+              />
             )}
           </div>
-        </div>
+          <div className="gap-block flex max-w-[42rem] flex-col">
+            <div className="gap-tight flex flex-col">
+              <h1 className="font-heading text-2xl">
+                {film.title}
+                {film.year !== null && (
+                  <span className="ml-tight text-faint font-normal">
+                    {String(film.year)}
+                  </span>
+                )}
+              </h1>
+              <p className="text-muted text-sm">
+                {film.directors.length > 0 && (
+                  <>Directed by {film.directors.join(", ")}</>
+                )}
+                {film.directors.length > 0 &&
+                  film.runtimeMinutes !== null &&
+                  " · "}
+                {film.runtimeMinutes !== null &&
+                  `${String(film.runtimeMinutes)} min`}
+              </p>
+            </div>
+            {film.overview !== null && (
+              <p className="text-muted max-w-[70ch] text-sm leading-relaxed">
+                {film.overview}
+              </p>
+            )}
+            {user === null && (
+              <Link
+                to={`/login?redirectTo=/film/${String(film.tmdbId)}`}
+                className={buttonStyles("primary", "self-start")}
+              >
+                Log this film
+              </Link>
+            )}
+          </div>
+        </section>
 
         {user !== null && (
-          <section className="mt-10">
-            <h2 className="text-lg font-semibold">Log this film</h2>
-            <Form method="post" className="mt-4 flex flex-col gap-4">
-              <div className="flex flex-wrap gap-4">
-                <label className="flex flex-col gap-1 text-sm">
-                  Watched on
-                  <input
-                    type="date"
-                    name="watchedOn"
-                    className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-                  />
-                </label>
-                <label className="flex flex-col gap-1 text-sm">
-                  Rating
-                  <select
-                    name="rating"
-                    defaultValue=""
-                    className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-                  >
+          <section className="gap-block border-border pt-step flex max-w-[42rem] flex-col border-t">
+            <h2 className="font-heading text-lg">Log this film</h2>
+            <Form method="post" className="gap-block flex flex-col">
+              <div className="gap-block grid sm:grid-cols-2">
+                <Field label="Watched on" htmlFor="watched-on">
+                  <Input id="watched-on" type="date" name="watchedOn" />
+                </Field>
+                <Field label="Rating" htmlFor="rating">
+                  <Select id="rating" name="rating" defaultValue="">
                     <option value="">No rating</option>
                     {STAR_OPTIONS.map((value) => (
                       <option key={value} value={value}>
                         {String(ratingToStars(value))} ★
                       </option>
                     ))}
-                  </select>
-                </label>
+                  </Select>
+                </Field>
               </div>
-              <label className="flex flex-col gap-1 text-sm">
-                Review
-                <textarea
-                  name="review"
-                  rows={5}
-                  className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-sm">
-                Tags (comma-separated)
-                <input
-                  name="tags"
-                  className="rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900"
-                />
-              </label>
-              <div className="flex gap-6 text-sm">
-                <label className="flex items-center gap-2">
+              <Field label="Review" htmlFor="review">
+                <Textarea id="review" name="review" rows={5} />
+              </Field>
+              <Field
+                label="Tags"
+                htmlFor="tags"
+                hint="Separate tags with commas."
+              >
+                <Input id="tags" name="tags" />
+              </Field>
+              <div className="gap-section flex flex-wrap text-sm">
+                <label className="gap-tight flex items-center">
                   <input type="checkbox" name="liked" /> Liked ♥
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="gap-tight flex items-center">
                   <input type="checkbox" name="rewatch" /> Rewatch
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="gap-tight flex items-center">
                   <input type="checkbox" name="containsSpoilers" /> Contains
                   spoilers
                 </label>
               </div>
               {actionData?.error !== null &&
                 actionData?.error !== undefined && (
-                  <p role="alert" className="text-sm text-red-600">
+                  <p role="alert" className="text-error text-sm">
                     {actionData.error}
                   </p>
                 )}
-              <button
-                type="submit"
-                className="self-start rounded bg-gray-900 px-4 py-2 text-white dark:bg-white dark:text-gray-900"
-              >
+              <Button type="submit" className="self-start">
                 Save entry
-              </button>
+              </Button>
             </Form>
           </section>
         )}
 
         {entries.length > 0 && (
-          <section className="mt-10">
-            <h2 className="text-lg font-semibold">Your entries</h2>
-            <ul className="mt-4 flex flex-col gap-3">
+          <section className="gap-block border-border pt-step flex max-w-[42rem] flex-col border-t">
+            <h2 className="font-heading text-lg">Your entries</h2>
+            <ul className="flex flex-col">
               {entries.map((entry) => (
                 <li
                   key={entry.id}
-                  className="border-b border-gray-200 pb-3 text-sm dark:border-gray-800"
+                  className="gap-tight border-border py-block flex flex-col border-b text-sm"
                 >
-                  <p>
-                    {entry.watchedOn ?? "No date"}
-                    {entry.rating !== null &&
-                      ` · ${String(ratingToStars(entry.rating))} ★`}
-                    {entry.liked && " · ♥"}
-                    {entry.rewatch && " · rewatch"}
-                  </p>
+                  <div className="gap-related text-faint flex flex-wrap items-center">
+                    <span className="tabular-nums">
+                      {entry.watchedOn ?? "No date"}
+                    </span>
+                    {entry.rating !== null && (
+                      <StarRating rating={entry.rating / 2} />
+                    )}
+                    {entry.liked && (
+                      <span className="text-accent" aria-label="Liked">
+                        ♥
+                      </span>
+                    )}
+                    {entry.rewatch && (
+                      <span className="gap-tight inline-flex items-center">
+                        <span className="bg-sage size-1.5 rounded-full" />
+                        Rewatch
+                      </span>
+                    )}
+                  </div>
                   {entry.review !== null && (
-                    <p className="mt-1 whitespace-pre-wrap">{entry.review}</p>
+                    <p className="leading-relaxed whitespace-pre-wrap">
+                      {entry.review}
+                    </p>
                   )}
                 </li>
               ))}
             </ul>
           </section>
         )}
-        <p className="mt-12 text-xs text-gray-500">
-          Film data from{" "}
-          <a href="https://www.themoviedb.org/" className="underline">
-            TMDB
-          </a>
-          . This product uses the TMDB API but is not endorsed or certified by
-          TMDB.
-        </p>
       </main>
     </>
   );

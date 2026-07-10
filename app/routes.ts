@@ -5,6 +5,7 @@ export default [
   route("login", "routes/login.tsx"),
   route("register", "routes/register.tsx"),
   route("welcome", "routes/welcome.tsx"),
+  route("import", "routes/import.tsx"),
   route("api/auth/*", "routes/api.auth.tsx"),
   route("films/search", "routes/films.search.tsx"),
   route("film/:tmdbId", "routes/film.tsx"),
