@@ -102,7 +102,10 @@ export async function getUserDiary(
     .leftJoin(tags, eq(tags.id, logEntryTags.tagId))
     .where(eq(logEntries.userId, userId))
     .groupBy(logEntries.id, films.id)
-    .orderBy(desc(logEntries.watchedOn), desc(logEntries.createdAt))
+    .orderBy(
+      sql`${logEntries.watchedOn} desc nulls last`,
+      desc(logEntries.createdAt),
+    )
     .limit(limit);
   return rows.map((row) => ({
     entry: row.entry,
@@ -121,5 +124,8 @@ export async function getFilmEntriesForUser(
     .where(
       sql`${logEntries.userId} = ${userId} and ${logEntries.filmId} = ${filmId}`,
     )
-    .orderBy(desc(logEntries.watchedOn), desc(logEntries.createdAt));
+    .orderBy(
+      sql`${logEntries.watchedOn} desc nulls last`,
+      desc(logEntries.createdAt),
+    );
 }

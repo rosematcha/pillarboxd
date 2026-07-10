@@ -29,7 +29,11 @@ export default function Login() {
       return;
     }
     const redirectTo = searchParams.get("redirectTo");
-    await navigate(redirectTo?.startsWith("/") === true ? redirectTo : "/");
+    const isSafePath =
+      redirectTo?.startsWith("/") === true &&
+      !redirectTo.startsWith("//") &&
+      !redirectTo.startsWith("/\\");
+    await navigate(isSafePath ? redirectTo : "/");
   };
 
   return (

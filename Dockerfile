@@ -22,4 +22,4 @@ COPY --from=build /app/build ./build
 COPY drizzle ./drizzle
 COPY scripts/migrate.js ./scripts/migrate.js
 EXPOSE 3000
-CMD ["sh", "-c", "node scripts/migrate.js && node node_modules/@react-router/serve/bin.js ./build/server/index.js"]
+CMD ["sh", "-c", "node scripts/migrate.js && node node_modules/@react-router/serve/bin.cjs ./build/server/index.js"]
