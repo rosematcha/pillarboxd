@@ -9,6 +9,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<Response> {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": 'attachment; filename="pillarboxd-diary.csv"',
+      "Cache-Control": "private, no-store",
     },
   });
 }

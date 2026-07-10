@@ -1,5 +1,5 @@
 import { ratingToStars } from "~/lib/letterboxd";
-import { getUserDiary } from "~/lib/logs.server";
+import { getAllUserDiary } from "~/lib/logs.server";
 
 function csvEscape(value: string): string {
   if (/[",\n\r]/.test(value)) {
@@ -10,7 +10,7 @@ function csvEscape(value: string): string {
 
 /** Full-fidelity JSON export of a user's diary. */
 export async function exportJson(userId: string): Promise<string> {
-  const diary = await getUserDiary(userId, Number.MAX_SAFE_INTEGER);
+  const diary = await getAllUserDiary(userId);
   return JSON.stringify(
     {
       format: "pillarboxd-export",
@@ -41,8 +41,9 @@ export async function exportJson(userId: string): Promise<string> {
 
 /** Letterboxd-compatible diary CSV so exports import cleanly elsewhere. */
 export async function exportDiaryCsv(userId: string): Promise<string> {
-  const diary = await getUserDiary(userId, Number.MAX_SAFE_INTEGER);
-  const header = "Date,Name,Year,Rating,Rewatch,Tags,Watched Date,Review";
+  const diary = await getAllUserDiary(userId);
+  const header =
+    "Date,Name,Year,Rating,Rewatch,Tags,Watched Date,Review,Liked,Spoilers";
   const rows = diary.map(({ entry, film, tags }) =>
     [
       entry.createdAt.toISOString().slice(0, 10),
@@ -53,6 +54,8 @@ export async function exportDiaryCsv(userId: string): Promise<string> {
       csvEscape(tags.join(", ")),
       entry.watchedOn ?? "",
       csvEscape(entry.review ?? ""),
+      entry.liked ? "Yes" : "",
+      entry.containsSpoilers ? "Yes" : "",
     ].join(","),
   );
   return [header, ...rows].join("\n");

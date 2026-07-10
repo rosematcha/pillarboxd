@@ -9,6 +9,7 @@ export async function loader({ request }: Route.LoaderArgs): Promise<Response> {
     headers: {
       "Content-Type": "application/json",
       "Content-Disposition": 'attachment; filename="pillarboxd-export.json"',
+      "Cache-Control": "private, no-store",
     },
   });
 }
