@@ -2,6 +2,7 @@ import { Link } from "react-router";
 
 import { buttonStyles } from "~/components/button";
 import { Nav } from "~/components/nav";
+import { PageShell } from "~/components/page-shell";
 import { requireSession } from "~/lib/auth/auth.server";
 import type { Route } from "./+types/welcome";
 
@@ -19,7 +20,7 @@ export default function Welcome({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="gap-step px-block mx-auto flex max-w-[42rem] flex-col py-12">
+      <PageShell>
         <header className="gap-tight flex flex-col">
           <h1 className="font-heading text-xl">Welcome to pillarboxd</h1>
           <p className="text-muted max-w-[70ch]">
@@ -34,7 +35,7 @@ export default function Welcome({ loaderData }: Route.ComponentProps) {
             Start fresh
           </Link>
         </div>
-      </main>
+      </PageShell>
     </>
   );
 }

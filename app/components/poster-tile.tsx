@@ -1,5 +1,7 @@
 import { Link } from "react-router";
 
+import { PosterImage } from "./poster-image";
+
 export function PosterTile({
   className,
   posterUrl,
@@ -25,13 +27,13 @@ export function PosterTile({
         .join(" ")}
     >
       {posterUrl === null ? (
-        <span className="bg-bg-subtle block size-full" aria-hidden="true" />
+        <PosterImage title={title} alt="" url={null} className="size-full" />
       ) : (
-        <img
-          src={posterUrl}
+        <PosterImage
+          title={title}
           alt=""
-          loading="lazy"
-          className="size-full object-cover"
+          url={posterUrl}
+          className="size-full"
         />
       )}
       <span className="px-tight pt-block pb-tight ease-feedback absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-[oklch(0.12_0.008_350/0.92)] text-xs opacity-0 transition-opacity duration-[var(--duration-feedback)] group-hover:opacity-100 group-focus-visible:opacity-100">

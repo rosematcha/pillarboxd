@@ -12,10 +12,7 @@ export function SiteFooter({
         .filter(Boolean)
         .join(" ")}
     >
-      <p>
-        Your instance can follow people on other instances, and they can follow
-        you.
-      </p>
+      <p>Federation is planned: instances will be able to follow each other.</p>
       <p>
         This product uses the <a href="https://www.themoviedb.org/">TMDB API</a>{" "}
         but is not endorsed or certified by TMDB. Source on{" "}

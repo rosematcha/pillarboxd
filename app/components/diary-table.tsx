@@ -1,13 +1,20 @@
 import { Link } from "react-router";
 
+import { PosterImage } from "~/components/poster-image";
+import { SpoilerText } from "~/components/spoiler-text";
 import { StarRating } from "~/components/star-rating";
+import { formatShortDate } from "~/lib/dates";
 
 export interface DiaryTableEntry {
   id: string;
   liked: boolean;
   rating: number | null;
   rewatch: boolean;
+  review: string | null;
+  containsSpoilers: boolean;
   watchedOn: string | null;
+  tags?: string[];
+  entryHref?: string;
   film: {
     posterPath: string | null;
     title: string;
@@ -38,65 +45,89 @@ export function DiaryTable({
           </tr>
         </thead>
         <tbody>
-          {entries.map((item) => (
-            <tr
-              key={item.id}
-              className="border-border hover:bg-accent/4 border-b transition-colors duration-[var(--duration-feedback)]"
-            >
-              <td className="px-block py-block text-faint whitespace-nowrap">
-                {item.watchedOn ?? "No date"}
-              </td>
-              <td className="px-tight py-block">
-                <Link
-                  to={`/film/${String(item.film.tmdbId)}`}
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  className="w-step rounded-poster bg-bg-subtle block aspect-[2/3] overflow-hidden"
-                >
-                  {item.film.posterPath !== null && (
-                    <img
-                      src={`https://image.tmdb.org/t/p/w92${item.film.posterPath}`}
+          {entries.map((item) => {
+            const filmHref = `/film/${String(item.film.tmdbId)}`;
+            const titleHref = item.entryHref ?? filmHref;
+            return (
+              <tr
+                key={item.id}
+                className="border-border hover:bg-accent/4 border-b transition-colors duration-[var(--duration-feedback)]"
+              >
+                <td className="px-block py-block text-faint whitespace-nowrap">
+                  {formatShortDate(item.watchedOn, { includeYear: true })}
+                </td>
+                <td className="px-tight py-block">
+                  <Link
+                    to={filmHref}
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    className="w-step rounded-poster block overflow-hidden"
+                  >
+                    <PosterImage
+                      title={item.film.title}
                       alt=""
-                      loading="lazy"
-                      className="size-full object-cover"
+                      url={
+                        item.film.posterPath === null
+                          ? null
+                          : `https://image.tmdb.org/t/p/w92${item.film.posterPath}`
+                      }
+                      className="aspect-[2/3]"
                     />
+                  </Link>
+                </td>
+                <td className="px-block py-block">
+                  <div className="gap-tight flex flex-col">
+                    <div>
+                      <Link
+                        to={titleHref}
+                        className="text-text hover:text-accent font-medium"
+                      >
+                        {item.film.title}
+                      </Link>{" "}
+                      {item.film.year !== null && (
+                        <span className="text-faint">
+                          {String(item.film.year)}
+                        </span>
+                      )}
+                    </div>
+                    {item.review !== null && (
+                      <p className="text-muted max-w-[50ch] text-xs leading-relaxed">
+                        <SpoilerText containsSpoilers={item.containsSpoilers}>
+                          {item.review}
+                        </SpoilerText>
+                      </p>
+                    )}
+                    {item.tags !== undefined && item.tags.length > 0 && (
+                      <p className="text-faint text-xs">
+                        {item.tags.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                </td>
+                <td className="px-block py-block">
+                  {item.rating !== null && (
+                    <StarRating rating={item.rating / 2} />
                   )}
-                </Link>
-              </td>
-              <td className="px-block py-block">
-                <Link
-                  to={`/film/${String(item.film.tmdbId)}`}
-                  className="text-text hover:text-accent font-medium"
-                >
-                  {item.film.title}
-                </Link>{" "}
-                {item.film.year !== null && (
-                  <span className="text-faint">{String(item.film.year)}</span>
-                )}
-              </td>
-              <td className="px-block py-block">
-                {item.rating !== null && (
-                  <StarRating rating={item.rating / 2} />
-                )}
-              </td>
-              <td className="px-block py-block">
-                <span className="gap-related flex items-center justify-end">
-                  {item.rewatch && (
-                    <span
-                      title="Rewatch"
-                      aria-label="Rewatch"
-                      className="bg-sage size-1.5 rounded-full"
-                    />
-                  )}
-                  {item.liked && (
-                    <span aria-label="Liked" className="text-accent">
-                      ♥
-                    </span>
-                  )}
-                </span>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="px-block py-block">
+                  <span className="gap-related flex items-center justify-end">
+                    {item.rewatch && (
+                      <span
+                        title="Rewatch"
+                        aria-label="Rewatch"
+                        className="bg-sage size-1.5 rounded-full"
+                      />
+                    )}
+                    {item.liked && (
+                      <span aria-label="Liked" className="text-accent">
+                        ♥
+                      </span>
+                    )}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

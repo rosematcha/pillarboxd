@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -8,6 +9,8 @@ import {
 } from "react-router";
 import { ZodError } from "zod";
 
+import { buttonStyles } from "~/components/button";
+import { Nav } from "~/components/nav";
 import { SiteFooter } from "~/components/site-footer";
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -83,14 +86,23 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="gap-tight px-block mx-auto flex max-w-[42rem] flex-col py-16">
-      <h1 className="font-heading text-xl">{message}</h1>
-      <p className="text-muted max-w-[70ch] text-sm">{details}</p>
-      {stack !== undefined && (
-        <pre className="mt-block border-border pt-block text-faint w-full overflow-x-auto border-t text-xs">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <>
+      <Nav user={null} />
+      <main className="gap-tight px-block mx-auto flex max-w-[42rem] flex-1 flex-col justify-center py-16">
+        <h1 className="font-heading text-xl">{message}</h1>
+        <p className="text-muted max-w-[70ch] text-sm">{details}</p>
+        <Link
+          to="/"
+          className={buttonStyles("secondary", "mt-block self-start")}
+        >
+          Back to activity
+        </Link>
+        {stack !== undefined && (
+          <pre className="mt-block border-border pt-block text-faint w-full overflow-x-auto border-t text-xs">
+            <code>{stack}</code>
+          </pre>
+        )}
+      </main>
+    </>
   );
 }

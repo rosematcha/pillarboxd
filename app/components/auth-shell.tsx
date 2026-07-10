@@ -23,8 +23,8 @@ export function AuthShell({
           Keep a film diary that stays yours.
         </p>
         <p className="text-faint max-w-[46ch] text-sm leading-relaxed">
-          Log what you watch, bring your Letterboxd history, and follow people
-          across independent instances.
+          Log what you watch, bring your Letterboxd history, and keep your data
+          exportable. Federation across instances is planned.
         </p>
       </div>
       <section className="gap-section flex flex-col">

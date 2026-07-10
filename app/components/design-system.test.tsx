@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { Button } from "./button";
 import { EmptyState } from "./empty-state";
-import { Field, FieldError, Input } from "./input";
+import { Field, FieldError, Input, Select } from "./input";
 import { PosterTile } from "./poster-tile";
 import { SiteFooter } from "./site-footer";
 import { StarRating } from "./star-rating";
@@ -30,6 +30,12 @@ describe("design system components", () => {
           />
         </Field>
         <FieldError>Another error</FieldError>
+        <Field label="Rating" htmlFor="rating">
+          <Select id="rating" name="rating" defaultValue="">
+            <option value="">No rating</option>
+            <option value="8">4 ★</option>
+          </Select>
+        </Field>
       </>,
     );
 

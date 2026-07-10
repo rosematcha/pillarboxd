@@ -1,6 +1,8 @@
 import { Link } from "react-router";
 
 import { StarRating } from "~/components/star-rating";
+import { PosterImage } from "~/components/poster-image";
+import { formatRelativeTime } from "~/lib/dates";
 
 export function ActivityItem({
   createdAt,
@@ -20,10 +22,7 @@ export function ActivityItem({
   username: string;
 }): React.ReactElement {
   const initial = username.slice(0, 1).toLowerCase();
-  const date = new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-  }).format(new Date(createdAt));
+  const timestamp = formatRelativeTime(createdAt);
 
   return (
     <article className="gap-block border-border py-block flex items-center border-b">
@@ -43,26 +42,33 @@ export function ActivityItem({
           <Link to={`/film/${String(tmdbId)}`} className="font-medium">
             {filmTitle}
           </Link>
+          {rating !== null && (
+            <>
+              {" "}
+              <StarRating rating={rating / 2} className="inline-flex" />
+            </>
+          )}
         </p>
-        {rating !== null && <StarRating rating={rating / 2} className="mt-1" />}
       </div>
       <time dateTime={createdAt} className="text-faint shrink-0 text-xs">
-        {date}
+        {timestamp}
       </time>
       <Link
         to={`/film/${String(tmdbId)}`}
         tabIndex={-1}
         aria-hidden="true"
-        className="rounded-poster bg-bg-subtle aspect-[2/3] w-7 shrink-0 overflow-hidden"
+        className="rounded-poster w-7 shrink-0 overflow-hidden"
       >
-        {posterPath !== null && (
-          <img
-            src={`https://image.tmdb.org/t/p/w92${posterPath}`}
-            alt=""
-            loading="lazy"
-            className="size-full object-cover"
-          />
-        )}
+        <PosterImage
+          title={filmTitle}
+          alt=""
+          url={
+            posterPath === null
+              ? null
+              : `https://image.tmdb.org/t/p/w92${posterPath}`
+          }
+          className="aspect-[2/3]"
+        />
       </Link>
     </article>
   );
