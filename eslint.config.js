@@ -64,6 +64,19 @@ export default tseslint.config(
       ],
       "@typescript-eslint/method-signature-style": ["error", "property"],
       "@typescript-eslint/no-import-type-side-effects": "error",
+      "@typescript-eslint/only-throw-error": [
+        "error",
+        {
+          allow: [
+            { from: "lib", name: "Response" },
+            {
+              from: "package",
+              name: "DataWithResponseInit",
+              package: "react-router",
+            },
+          ],
+        },
+      ],
     },
   },
   {
