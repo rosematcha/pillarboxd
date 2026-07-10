@@ -7,8 +7,9 @@ import {
 } from "./schemas";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_TIMEOUT_MS = 15_000;
 
-class TmdbError extends Error {
+export class TmdbError extends Error {
   constructor(
     message: string,
     public readonly status?: number,
@@ -31,6 +32,7 @@ async function tmdbFetch(
       Authorization: `Bearer ${env().TMDB_ACCESS_TOKEN}`,
       Accept: "application/json",
     },
+    signal: AbortSignal.timeout(TMDB_TIMEOUT_MS),
   });
   if (!response.ok) {
     throw new TmdbError(
@@ -39,6 +41,24 @@ async function tmdbFetch(
     );
   }
   return response.json();
+}
+
+export function tmdbErrorMessage(error: unknown): string {
+  if (error instanceof TmdbError) {
+    if (error.status === 404) {
+      return "Film not found.";
+    }
+    if (error.status === 429) {
+      return "TMDB is rate limiting requests. Try again in a minute.";
+    }
+    if (error.status !== undefined && error.status >= 500) {
+      return "Film data is temporarily unavailable. Try again shortly.";
+    }
+  }
+  if (error instanceof DOMException && error.name === "TimeoutError") {
+    return "Film data took too long to load. Try again.";
+  }
+  return "Film data could not be loaded.";
 }
 
 export async function searchMovies(
@@ -64,4 +84,14 @@ export async function getMovieDetails(
     append_to_response: "credits",
   });
   return movieDetailsSchema.parse(data);
+}
+
+export async function getSimilarMovies(
+  tmdbId: number,
+): Promise<TmdbSearchResponse["results"]> {
+  const data = await tmdbFetch(`/movie/${String(tmdbId)}/similar`, {
+    page: "1",
+  });
+  const parsed = searchResponseSchema.parse(data);
+  return parsed.results.slice(0, 8);
 }

@@ -26,8 +26,20 @@ export const movieDetailsSchema = z.object({
   backdrop_path: z.string().nullish(),
   overview: z.string().optional(),
   runtime: z.number().int().nullish(),
+  genres: z
+    .array(z.object({ id: z.number().int(), name: z.string() }))
+    .optional(),
   credits: z
     .object({
+      cast: z
+        .array(
+          z.object({
+            name: z.string(),
+            character: z.string().nullish(),
+            order: z.number().int().optional(),
+          }),
+        )
+        .optional(),
       crew: z.array(
         z.object({
           name: z.string(),
@@ -52,6 +64,8 @@ export interface FilmValues {
   overview: string | null;
   runtimeMinutes: number | null;
   directors: string[];
+  genres: string[];
+  cast: { name: string; character: string | null }[];
 }
 
 export function releaseYear(releaseDate: string | undefined): number | null {
@@ -66,6 +80,13 @@ export function movieDetailsToFilm(details: TmdbMovieDetails): FilmValues {
   const directors = (details.credits?.crew ?? [])
     .filter((member) => member.job === "Director")
     .map((member) => member.name);
+  const cast = [...(details.credits?.cast ?? [])]
+    .sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+    .slice(0, 12)
+    .map((member) => ({
+      name: member.name,
+      character: member.character ?? null,
+    }));
   return {
     tmdbId: details.id,
     imdbId: details.imdb_id ?? null,
@@ -77,5 +98,7 @@ export function movieDetailsToFilm(details: TmdbMovieDetails): FilmValues {
     overview: details.overview ?? null,
     runtimeMinutes: details.runtime ?? null,
     directors,
+    genres: (details.genres ?? []).map((genre) => genre.name),
+    cast,
   };
 }

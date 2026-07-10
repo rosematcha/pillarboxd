@@ -49,6 +49,8 @@ describe("movieDetailsToFilm", () => {
       overview: "A crew of thieves.",
       runtimeMinutes: 170,
       directors: ["Michael Mann"],
+      genres: [],
+      cast: [],
     });
   });
 
@@ -57,6 +59,8 @@ describe("movieDetailsToFilm", () => {
     const film = movieDetailsToFilm(details);
     expect(film.year).toBeNull();
     expect(film.directors).toEqual([]);
+    expect(film.genres).toEqual([]);
+    expect(film.cast).toEqual([]);
     expect(film.imdbId).toBeNull();
   });
 });
