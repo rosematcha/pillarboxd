@@ -9,11 +9,12 @@ export function Dropzone({
   accept,
   id = "file-upload",
   name,
+  prompt = "Drop your Letterboxd export .zip here",
   required,
 }: Pick<
   InputHTMLAttributes<HTMLInputElement>,
   "accept" | "id" | "name" | "required"
->): React.ReactElement {
+> & { prompt?: string }): React.ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -55,9 +56,7 @@ export function Dropzone({
       }}
       onDrop={acceptDrop}
     >
-      <span className="text-text font-medium">
-        {fileName ?? "Drop your Letterboxd export .zip here"}
-      </span>
+      <span className="text-text font-medium">{fileName ?? prompt}</span>
       <span>
         or <span className="text-accent">browse files</span>
       </span>

@@ -108,12 +108,18 @@ export function LetterboxdImport({
           </Form>
         </div>
         {submittingIntent !== null && (
-          <div
-            className="rounded-poster bg-bg-subtle h-1 overflow-hidden"
-            role="progressbar"
-            aria-label="Import in progress"
-          >
-            <div className="bg-accent h-full w-2/3 animate-pulse motion-reduce:animate-none" />
+          <div className="gap-tight flex flex-col">
+            <div
+              className="rounded-poster bg-bg-subtle h-1 overflow-hidden"
+              role="progressbar"
+              aria-label="Import in progress"
+            >
+              <div className="bg-accent h-full w-2/3 animate-pulse motion-reduce:animate-none" />
+            </div>
+            <p className="text-muted text-sm">
+              Matching films against TMDB. Large exports can take several
+              minutes. Keep this tab open.
+            </p>
           </div>
         )}
         {error !== null && (
@@ -127,6 +133,7 @@ export function LetterboxdImport({
           <ImportResults
             imported={result.imported}
             unmatched={result.unmatched}
+            jobId={result.jobId}
           />
         </ImportStep>
       )}

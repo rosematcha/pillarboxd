@@ -6,7 +6,10 @@ import {
   mergeImport,
   parseDiaryCsv,
   parseLikedFilmsCsv,
+  parseListCsv,
+  parseRatingsCsv,
   parseReviewsCsv,
+  parseWatchlistCsv,
   ratingToStars,
   starsToRating,
 } from "./letterboxd";
@@ -26,6 +29,15 @@ const REVIEWS_CSV = `Date,Name,Year,Letterboxd URI,Rating,Review,Tags,Watched Da
 
 const LIKES_CSV = `Date,Name,Year,Letterboxd URI
 2026-01-05,Heat,1995,https://boxd.it/film/heat
+`;
+
+const RATINGS_CSV = `Date,Name,Year,Letterboxd URI,Rating
+2026-01-05,Heat,1995,https://boxd.it/film/heat,4.5
+2026-02-01,Mulholland Drive,2001,https://boxd.it/film/mulholland-drive,5
+`;
+
+const WATCHLIST_CSV = `Date,Name,Year,Letterboxd URI
+2026-03-01,Stalker,1979,https://boxd.it/film/stalker
 `;
 
 describe("starsToRating", () => {
@@ -48,17 +60,21 @@ describe("starsToRating", () => {
 });
 
 describe("extractLetterboxdCsvs", () => {
-  it("pulls diary, reviews, and likes out of an export zip", () => {
+  it("pulls diary, reviews, likes, ratings, and watchlist out of an export zip", () => {
     const zip = zipSync({
       "diary.csv": strToU8(DIARY_CSV),
       "reviews.csv": strToU8(REVIEWS_CSV),
       "likes/films.csv": strToU8(LIKES_CSV),
-      "watchlist.csv": strToU8("Date,Name,Year\n"),
+      "ratings.csv": strToU8(RATINGS_CSV),
+      "watchlist.csv": strToU8(WATCHLIST_CSV),
     });
     const csvs = extractLetterboxdCsvs(zip);
     expect(csvs.diary).toBe(DIARY_CSV);
     expect(csvs.reviews).toBe(REVIEWS_CSV);
     expect(csvs.likes).toBe(LIKES_CSV);
+    expect(csvs.ratings).toBe(RATINGS_CSV);
+    expect(csvs.watchlist).toBe(WATCHLIST_CSV);
+    expect(csvs.lists).toEqual([]);
   });
 
   it("returns undefined for files the export omits", () => {
@@ -67,6 +83,38 @@ describe("extractLetterboxdCsvs", () => {
     expect(csvs.diary).toBe(DIARY_CSV);
     expect(csvs.reviews).toBeUndefined();
     expect(csvs.likes).toBeUndefined();
+    expect(csvs.ratings).toBeUndefined();
+    expect(csvs.watchlist).toBeUndefined();
+    expect(csvs.lists).toEqual([]);
+  });
+
+  it("extracts list CSVs from the lists folder", () => {
+    const listCsv = `Position,Name,Year,URI,Description
+1,Heat,1995,https://boxd.it/film/heat,
+2,Alien,1979,https://boxd.it/film/alien,Still perfect
+`;
+    const zip = zipSync({
+      "diary.csv": strToU8(DIARY_CSV),
+      "lists/favorites.csv": strToU8(listCsv),
+    });
+    const csvs = extractLetterboxdCsvs(zip);
+    expect(csvs.lists).toHaveLength(1);
+    expect(csvs.lists[0]?.name).toBe("favorites");
+    expect(csvs.lists[0]?.csv).toBe(listCsv);
+  });
+});
+
+describe("parseListCsv", () => {
+  it("parses ranked list rows", () => {
+    expect(
+      parseListCsv(`Position,Name,Year,URI,Description
+1,Heat,1995,https://boxd.it/film/heat,
+2,Alien,1979,https://boxd.it/film/alien,Note
+`),
+    ).toEqual([
+      { name: "Heat", year: 1995, notes: null, position: 1 },
+      { name: "Alien", year: 1979, notes: "Note", position: 2 },
+    ]);
   });
 });
 
@@ -83,6 +131,7 @@ describe("parseDiaryCsv", () => {
       rewatch: false,
       tags: ["crime"],
       liked: false,
+      containsSpoilers: false,
     });
     expect(entries[1]?.rewatch).toBe(true);
     expect(entries[1]?.tags).toEqual(["crime", "rewatch club"]);
@@ -95,6 +144,24 @@ describe("parseReviewsCsv", () => {
     const entries = parseReviewsCsv(REVIEWS_CSV);
     expect(entries[0]?.review).toContain('"You want to be making moves');
     expect(entries[0]?.review).toContain("\n");
+  });
+});
+
+describe("parseRatingsCsv", () => {
+  it("parses standing ratings", () => {
+    const ratings = parseRatingsCsv(RATINGS_CSV);
+    expect(ratings).toEqual([
+      { name: "Heat", year: 1995, rating: 9 },
+      { name: "Mulholland Drive", year: 2001, rating: 10 },
+    ]);
+  });
+});
+
+describe("parseWatchlistCsv", () => {
+  it("parses watchlist films", () => {
+    expect(parseWatchlistCsv(WATCHLIST_CSV)).toEqual([
+      { name: "Stalker", year: 1979 },
+    ]);
   });
 });
 

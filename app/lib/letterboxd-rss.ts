@@ -108,6 +108,7 @@ export function parseLetterboxdRss(xml: string): RssImportedEntry[] {
       rewatch: firstMatch(item, "letterboxd:rewatch") === "Yes",
       tags: [],
       liked: firstMatch(item, "letterboxd:memberLike") === "Yes",
+      containsSpoilers: false,
     });
   }
   return entries;

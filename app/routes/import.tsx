@@ -2,6 +2,7 @@ import { data } from "react-router";
 
 import { LetterboxdImport } from "~/components/letterboxd-import";
 import { Nav } from "~/components/nav";
+import { PageShell } from "~/components/page-shell";
 import { requireSession } from "~/lib/auth/auth.server";
 import { handleImportAction } from "~/lib/import-action.server";
 import type { Route } from "./+types/import";
@@ -16,8 +17,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const { result, error, status } = await handleImportAction(request);
-  return data({ result, error }, { status });
+  const { result, error, status, manualMatch } =
+    await handleImportAction(request);
+  return data({ result, error, manualMatch }, { status });
 }
 
 export default function ImportRoute({
@@ -27,7 +29,7 @@ export default function ImportRoute({
   return (
     <>
       <Nav user={loaderData.user} />
-      <main className="gap-step px-block py-step mx-auto flex max-w-[42rem] flex-col sm:py-12">
+      <PageShell>
         <header className="gap-tight flex flex-col">
           <h1 className="font-heading text-xl">Import from Letterboxd</h1>
           <p className="text-muted max-w-[70ch] text-sm">
@@ -35,11 +37,16 @@ export default function ImportRoute({
             Letterboxd export.
           </p>
         </header>
+        {actionData?.manualMatch?.imported === true && (
+          <p className="text-muted text-sm" role="status">
+            Entry imported.
+          </p>
+        )}
         <LetterboxdImport
           result={actionData?.result ?? null}
           error={actionData?.error ?? null}
         />
-      </main>
+      </PageShell>
     </>
   );
 }
