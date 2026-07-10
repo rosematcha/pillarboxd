@@ -30,7 +30,7 @@ export default function Register() {
       setError(result.error.message ?? "Registration failed.");
       return;
     }
-    await navigate(`/u/${username}`);
+    await navigate("/welcome");
   };
 
   return (
