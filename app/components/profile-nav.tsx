@@ -36,7 +36,7 @@ export function ProfileNav({
   return (
     <nav
       aria-label="Profile sections"
-      className="border-border gap-block flex flex-wrap border-b"
+      className="border-border gap-block -mx-block px-block flex [scrollbar-width:thin] overflow-x-auto border-b sm:mx-0 sm:px-0"
     >
       {TABS.map((tab) => {
         const to = `${base}${tab.path}`;
@@ -52,10 +52,8 @@ export function ProfileNav({
             end={tab.path === ""}
             className={({ isActive }) =>
               [
-                "gap-tight py-related ease-feedback inline-flex items-baseline text-sm font-medium transition-colors duration-[var(--duration-feedback)]",
-                isActive
-                  ? "text-accent border-accent border-b-2"
-                  : "text-muted hover:text-text border-b-2 border-transparent",
+                "gap-tight py-related ease-feedback inline-flex min-h-11 shrink-0 items-center text-sm font-medium transition-colors duration-[var(--duration-feedback)]",
+                isActive ? "text-accent" : "text-muted hover:text-text",
               ].join(" ")
             }
           >

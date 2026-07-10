@@ -9,6 +9,7 @@ export default [
   route("import", "routes/import.tsx"),
   route("api/auth/*", "routes/api.auth.tsx"),
   route("films/search", "routes/films.search.tsx"),
+  route("films/search/preview", "routes/films.search.preview.tsx"),
   route("film/:tmdbId", "routes/film.tsx"),
   route("film/:tmdbId/log", "routes/film.log.tsx"),
   route("entries/:entryId", "routes/entry.tsx"),

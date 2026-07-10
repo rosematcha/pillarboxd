@@ -114,9 +114,9 @@ export default function ProfileDiary({ loaderData }: Route.ComponentProps) {
         <ProfileNav username={profile.username} counts={counts} />
         <Form
           method="get"
-          className="gap-block border-border pb-block flex flex-wrap items-end border-b"
+          className="gap-block border-border pb-block grid grid-cols-2 items-end border-b sm:flex sm:flex-wrap"
         >
-          <Field label="Year" htmlFor="diary-year">
+          <Field label="Year" htmlFor="diary-year" className="min-w-0">
             <Input
               id="diary-year"
               name="year"
@@ -126,7 +126,11 @@ export default function ProfileDiary({ loaderData }: Route.ComponentProps) {
               defaultValue={filters.year}
             />
           </Field>
-          <Field label="Min rating" htmlFor="diary-min-rating">
+          <Field
+            label="Min rating"
+            htmlFor="diary-min-rating"
+            className="min-w-0"
+          >
             <Input
               id="diary-min-rating"
               name="minRating"
@@ -135,7 +139,7 @@ export default function ProfileDiary({ loaderData }: Route.ComponentProps) {
               defaultValue={filters.minRating}
             />
           </Field>
-          <label className="gap-tight text-muted flex items-center text-sm">
+          <label className="gap-tight text-muted col-span-2 flex min-h-11 items-center text-sm sm:col-auto">
             <input
               type="checkbox"
               name="hasReview"
@@ -145,7 +149,10 @@ export default function ProfileDiary({ loaderData }: Route.ComponentProps) {
             />
             Has review
           </label>
-          <button type="submit" className={buttonStyles("secondary")}>
+          <button
+            type="submit"
+            className={buttonStyles("secondary", "col-span-2 sm:col-auto")}
+          >
             Filter
           </button>
         </Form>

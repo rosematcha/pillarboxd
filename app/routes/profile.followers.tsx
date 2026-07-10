@@ -104,15 +104,17 @@ export default function ProfileFollowers({ loaderData }: Route.ComponentProps) {
                 key={person.id}
                 className="border-border gap-block py-related flex items-center justify-between border-b"
               >
-                <div className="gap-tight flex flex-col">
+                <div className="gap-tight flex min-w-0 flex-1 flex-col">
                   <Link
                     to={`/u/${person.username}`}
-                    className="hover:text-accent font-medium"
+                    className="hover:text-accent truncate font-medium"
                   >
                     @{person.username}
                   </Link>
                   {person.name !== person.username && (
-                    <span className="text-muted text-sm">{person.name}</span>
+                    <span className="text-muted truncate text-sm">
+                      {person.name}
+                    </span>
                   )}
                 </div>
                 {viewerId !== null && viewerId !== person.id && (

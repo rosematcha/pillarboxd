@@ -36,7 +36,7 @@ export function PosterTile({
           className="size-full"
         />
       )}
-      <span className="px-tight pt-block pb-tight ease-feedback absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-[oklch(0.12_0.008_350/0.92)] text-xs opacity-0 transition-opacity duration-[var(--duration-feedback)] group-hover:opacity-100 group-focus-visible:opacity-100">
+      <span className="px-tight pt-block pb-tight ease-feedback absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent to-[oklch(0.12_0.008_350/0.92)] text-xs opacity-0 transition-opacity duration-[var(--duration-feedback)] group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
         <strong className="block font-medium text-[oklch(0.92_0.008_350)]">
           {title}
         </strong>

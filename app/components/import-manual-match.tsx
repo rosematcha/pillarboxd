@@ -34,7 +34,7 @@ export function ImportManualMatch({
             <li key={candidate.tmdbId}>
               <Form
                 method="post"
-                className="gap-related flex flex-wrap items-center"
+                className="gap-related flex flex-col items-stretch sm:flex-row sm:items-center"
               >
                 <input type="hidden" name="intent" value="match" />
                 {jobId !== undefined && (
@@ -81,7 +81,11 @@ export function ImportManualMatch({
                   {candidate.title}
                   {candidate.year !== null && ` (${String(candidate.year)})`}
                 </span>
-                <Button type="submit" variant="secondary">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className="sm:self-auto"
+                >
                   Use this
                 </Button>
               </Form>
@@ -89,7 +93,10 @@ export function ImportManualMatch({
           ))}
         </ul>
       )}
-      <Form method="post" className="gap-related flex flex-wrap items-end">
+      <Form
+        method="post"
+        className="gap-related flex flex-col items-stretch sm:flex-row sm:flex-wrap sm:items-end"
+      >
         <input type="hidden" name="intent" value="match" />
         {jobId !== undefined && (
           <input type="hidden" name="jobId" value={jobId} />
@@ -127,12 +134,12 @@ export function ImportManualMatch({
             aria-label={`TMDB id for ${entry.name}`}
           />
         </Field>
-        <Button type="submit" variant="secondary" className="self-end">
+        <Button type="submit" variant="secondary" className="sm:self-end">
           Use this film
         </Button>
         <a
           href={`/films/search?q=${searchQuery}`}
-          className="text-accent self-end text-sm font-medium"
+          className="text-accent flex min-h-11 items-center text-sm font-medium sm:self-end"
         >
           Search TMDB
         </a>

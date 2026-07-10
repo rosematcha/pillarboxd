@@ -16,7 +16,7 @@ export function buttonStyles(
   className = "",
 ): string {
   return [
-    "inline-flex items-center justify-center gap-tight whitespace-nowrap rounded-control border px-block py-tight text-sm font-medium transition-[background-color,border-color,color,opacity] duration-[var(--duration-feedback)] ease-feedback disabled:cursor-not-allowed disabled:opacity-45",
+    "inline-flex min-h-11 items-center justify-center gap-tight whitespace-nowrap rounded-control border px-block py-tight text-sm font-medium transition-[background-color,border-color,color,opacity] duration-[var(--duration-feedback)] ease-feedback disabled:cursor-not-allowed disabled:opacity-45",
     variantClasses[variant],
     className,
   ]

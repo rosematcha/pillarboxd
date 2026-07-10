@@ -495,7 +495,7 @@ export default function Film({ loaderData }: Route.ComponentProps) {
             {similar.length > 0 && (
               <section className="gap-block border-border pt-section flex flex-col border-t">
                 <h2 className="font-heading text-lg">Similar films</h2>
-                <div className="gap-block grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8">
+                <div className="gap-block grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8">
                   {similar.map((movie) => (
                     <PosterTile
                       key={movie.tmdbId}
@@ -568,7 +568,7 @@ export default function Film({ loaderData }: Route.ComponentProps) {
             )}
           </div>
 
-          <aside className="border-border lg:border-border py-block lg:pl-block order-2 lg:order-none lg:border-l lg:py-0">
+          <aside className="border-border py-block lg:pl-block order-2 border-y lg:order-none lg:border-y-0 lg:border-l lg:py-0">
             <FilmActions
               tmdbId={film.tmdbId}
               state={state}

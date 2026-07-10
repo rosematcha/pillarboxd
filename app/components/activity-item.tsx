@@ -33,7 +33,7 @@ export function ActivityItem({
       >
         {initial}
       </Link>
-      <div className="min-w-0 flex-1 text-sm">
+      <div className="gap-tight flex min-w-0 flex-1 flex-col text-sm sm:flex-row sm:items-center sm:justify-between">
         <p>
           <Link to={`/u/${username}`} className="font-medium">
             {username}
@@ -49,10 +49,10 @@ export function ActivityItem({
             </>
           )}
         </p>
+        <time dateTime={createdAt} className="text-faint shrink-0 text-xs">
+          {timestamp}
+        </time>
       </div>
-      <time dateTime={createdAt} className="text-faint shrink-0 text-xs">
-        {timestamp}
-      </time>
       <Link
         to={`/film/${String(tmdbId)}`}
         tabIndex={-1}

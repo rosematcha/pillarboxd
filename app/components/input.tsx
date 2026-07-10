@@ -6,7 +6,7 @@ import type {
 } from "react";
 
 const controlStyles =
-  "w-full appearance-none rounded-control border border-border bg-bg-subtle px-related py-tight text-sm text-text caret-accent transition-[border-color,box-shadow] duration-[var(--duration-feedback)] ease-feedback placeholder:text-faint hover:border-border-strong focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-45 aria-[invalid=true]:border-error";
+  "min-h-11 w-full appearance-none rounded-control border border-border bg-bg-subtle px-related py-tight text-sm text-text caret-accent transition-[border-color,box-shadow] duration-[var(--duration-feedback)] ease-feedback placeholder:text-faint hover:border-border-strong focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-45 aria-[invalid=true]:border-error";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   invalid?: boolean;

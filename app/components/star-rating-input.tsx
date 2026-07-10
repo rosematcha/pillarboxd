@@ -51,18 +51,18 @@ export function StarRatingInput({
           return (
             <span
               key={star}
-              className="relative inline-block h-[1.25em] w-[1.1em] text-lg leading-none"
+              className="relative inline-flex size-11 items-center justify-center text-xl leading-none"
             >
               <span
                 aria-hidden="true"
-                className="text-gold/25 absolute inset-0"
+                className="text-gold/25 absolute inset-0 flex items-center justify-center"
               >
                 ★
               </span>
               {fill > 0 && (
                 <span
                   aria-hidden="true"
-                  className="text-gold absolute inset-0 overflow-hidden"
+                  className="text-gold absolute inset-0 flex items-center overflow-hidden"
                   style={{ width: fill === 1 ? "100%" : "50%" }}
                 >
                   ★
@@ -100,7 +100,7 @@ export function StarRatingInput({
           role="radio"
           aria-checked={value === null}
           aria-label="No rating"
-          className="text-muted hover:text-text focus-visible:ring-accent ml-related rounded-sm text-xs focus-visible:ring-2 focus-visible:outline-none"
+          className="text-muted hover:text-text focus-visible:ring-accent ml-related px-tight min-h-11 rounded-sm text-xs focus-visible:ring-2 focus-visible:outline-none"
           onClick={() => {
             setValue(null);
           }}

@@ -1,8 +1,7 @@
-import { Form, Link } from "react-router";
+import { Link } from "react-router";
 
-import { Button } from "~/components/button";
 import { EmptyState } from "~/components/empty-state";
-import { Input } from "~/components/input";
+import { FilmSearch } from "~/components/film-search";
 import { Nav } from "~/components/nav";
 import { PageShell } from "~/components/page-shell";
 import { PosterTile } from "~/components/poster-tile";
@@ -49,17 +48,11 @@ export default function FilmsSearch({ loaderData }: Route.ComponentProps) {
       <PageShell width="wide">
         <header className="gap-block flex max-w-[42rem] flex-col">
           <h1 className="font-heading text-xl">Search films</h1>
-          <Form method="get" className="gap-related flex">
-            <Input
-              type="search"
-              name="q"
-              defaultValue={loaderData.query}
-              placeholder="Film title"
-              aria-label="Film title"
-              className="flex-1"
-            />
-            <Button type="submit">Search</Button>
-          </Form>
+          <FilmSearch
+            key={loaderData.query}
+            defaultValue={loaderData.query}
+            submitLabel="Search"
+          />
         </header>
         {loaderData.searchError !== null && (
           <p role="alert" className="text-error text-sm">

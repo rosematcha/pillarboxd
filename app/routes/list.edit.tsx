@@ -243,38 +243,40 @@ export default function ListEdit({
               {entries.map((item, index) => (
                 <li
                   key={item.filmId}
-                  className="border-border gap-block py-related flex items-center border-b"
+                  className="border-border gap-related py-block flex flex-col border-b sm:flex-row sm:items-center"
                 >
-                  <span className="text-faint w-6 shrink-0 text-sm tabular-nums">
-                    {String(index + 1)}
-                  </span>
-                  <Link
-                    to={`/film/${String(item.tmdbId)}`}
-                    className="rounded-poster w-10 shrink-0 overflow-hidden"
-                  >
-                    <PosterImage
-                      title={item.title}
-                      alt=""
-                      url={
-                        item.posterPath === null
-                          ? null
-                          : `https://image.tmdb.org/t/p/w92${item.posterPath}`
-                      }
-                      className="aspect-[2/3]"
-                    />
-                  </Link>
-                  <div className="min-w-0 flex-1 text-sm">
+                  <div className="gap-block flex min-w-0 items-center">
+                    <span className="text-faint w-6 shrink-0 text-sm tabular-nums">
+                      {String(index + 1)}
+                    </span>
                     <Link
                       to={`/film/${String(item.tmdbId)}`}
-                      className="hover:text-accent font-medium"
+                      className="rounded-poster w-10 shrink-0 overflow-hidden"
                     >
-                      {item.title}
+                      <PosterImage
+                        title={item.title}
+                        alt=""
+                        url={
+                          item.posterPath === null
+                            ? null
+                            : `https://image.tmdb.org/t/p/w92${item.posterPath}`
+                        }
+                        className="aspect-[2/3]"
+                      />
                     </Link>
-                    {item.year !== null && (
-                      <span className="text-faint"> {String(item.year)}</span>
-                    )}
+                    <div className="min-w-0 flex-1 text-sm">
+                      <Link
+                        to={`/film/${String(item.tmdbId)}`}
+                        className="hover:text-accent font-medium"
+                      >
+                        {item.title}
+                      </Link>
+                      {item.year !== null && (
+                        <span className="text-faint"> {String(item.year)}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="gap-tight flex shrink-0">
+                  <div className="gap-tight ml-[3.5rem] flex sm:ml-0 sm:shrink-0">
                     <Form method="post">
                       <input type="hidden" name="intent" value="move-up" />
                       <input type="hidden" name="filmId" value={item.filmId} />
