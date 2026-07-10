@@ -18,3 +18,7 @@ export function db(): ReturnType<typeof createDb> {
   cached ??= createDb();
   return cached;
 }
+
+export type DbTransaction = Parameters<
+  Parameters<ReturnType<typeof createDb>["transaction"]>[0]
+>[0];
