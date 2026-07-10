@@ -77,6 +77,21 @@ export async function createLogEntry(
   return entry;
 }
 
+/**
+ * Keys (`filmId|watchedOn`) of a user's existing entries, so an import can
+ * skip re-adding the same watch — makes imports idempotent and safe to run
+ * from more than one source (e.g. RSS then the export zip).
+ */
+export async function getExistingEntryKeys(
+  userId: string,
+): Promise<Set<string>> {
+  const rows = await db()
+    .select({ filmId: logEntries.filmId, watchedOn: logEntries.watchedOn })
+    .from(logEntries)
+    .where(eq(logEntries.userId, userId));
+  return new Set(rows.map((row) => `${row.filmId}|${row.watchedOn ?? ""}`));
+}
+
 export interface DiaryEntry {
   entry: LogEntry;
   film: typeof films.$inferSelect;

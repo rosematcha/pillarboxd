@@ -1,6 +1,8 @@
+import { strToU8, zipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 
 import {
+  extractLetterboxdCsvs,
   mergeImport,
   parseDiaryCsv,
   parseLikedFilmsCsv,
@@ -42,6 +44,29 @@ describe("starsToRating", () => {
   it("round-trips with ratingToStars", () => {
     expect(ratingToStars(9)).toBe(4.5);
     expect(starsToRating(ratingToStars(7))).toBe(7);
+  });
+});
+
+describe("extractLetterboxdCsvs", () => {
+  it("pulls diary, reviews, and likes out of an export zip", () => {
+    const zip = zipSync({
+      "diary.csv": strToU8(DIARY_CSV),
+      "reviews.csv": strToU8(REVIEWS_CSV),
+      "likes/films.csv": strToU8(LIKES_CSV),
+      "watchlist.csv": strToU8("Date,Name,Year\n"),
+    });
+    const csvs = extractLetterboxdCsvs(zip);
+    expect(csvs.diary).toBe(DIARY_CSV);
+    expect(csvs.reviews).toBe(REVIEWS_CSV);
+    expect(csvs.likes).toBe(LIKES_CSV);
+  });
+
+  it("returns undefined for files the export omits", () => {
+    const zip = zipSync({ "diary.csv": strToU8(DIARY_CSV) });
+    const csvs = extractLetterboxdCsvs(zip);
+    expect(csvs.diary).toBe(DIARY_CSV);
+    expect(csvs.reviews).toBeUndefined();
+    expect(csvs.likes).toBeUndefined();
   });
 });
 
