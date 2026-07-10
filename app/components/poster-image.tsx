@@ -1,13 +1,16 @@
 import { useState } from "react";
+import type { ImgHTMLAttributes } from "react";
 
 export function PosterImage({
   alt,
   className,
+  loading = "lazy",
   title,
   url,
 }: {
   alt: string;
   className?: string;
+  loading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
   title: string;
   url: string | null;
 }): React.ReactElement {
@@ -29,7 +32,7 @@ export function PosterImage({
         <img
           src={url}
           alt={alt}
-          loading="lazy"
+          loading={loading}
           className="size-full object-cover"
           onError={() => {
             setFailedUrl(url);

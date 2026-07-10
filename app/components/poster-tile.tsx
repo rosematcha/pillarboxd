@@ -4,12 +4,14 @@ import { PosterImage } from "./poster-image";
 
 export function PosterTile({
   className,
+  loading,
   posterUrl,
   title,
   to,
   year,
 }: {
   className?: string;
+  loading?: "eager" | "lazy";
   posterUrl: string | null;
   title: string;
   to: string;
@@ -32,6 +34,7 @@ export function PosterTile({
         <PosterImage
           title={title}
           alt=""
+          loading={loading}
           url={posterUrl}
           className="size-full"
         />

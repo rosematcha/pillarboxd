@@ -1,19 +1,21 @@
+import { canSearchFilms, normalizeFilmSearchQuery } from "~/lib/film-search";
 import { searchMovies, tmdbErrorMessage } from "~/lib/tmdb/client.server";
 import { releaseYear } from "~/lib/tmdb/schemas";
 import type { Route } from "./+types/films.search.preview";
 
-const MINIMUM_QUERY_LENGTH = 2;
 const PREVIEW_LIMIT = 5;
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const query = new URL(request.url).searchParams.get("q")?.trim() ?? "";
+  const query = normalizeFilmSearchQuery(
+    new URL(request.url).searchParams.get("q"),
+  );
 
-  if (query.length < MINIMUM_QUERY_LENGTH) {
+  if (!canSearchFilms(query)) {
     return { query, error: null, results: [] };
   }
 
   try {
-    const { results } = await searchMovies(query);
+    const { results } = await searchMovies(query, { signal: request.signal });
     return {
       query,
       error: null,

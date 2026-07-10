@@ -9,7 +9,13 @@ export interface NavUser {
   username: string;
 }
 
-export function Nav({ user }: { user: NavUser | null }): React.ReactElement {
+export function Nav({
+  showSearch = true,
+  user,
+}: {
+  showSearch?: boolean;
+  user: NavUser | null;
+}): React.ReactElement {
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,7 +41,7 @@ export function Nav({ user }: { user: NavUser | null }): React.ReactElement {
   return (
     <nav aria-label="Main" className="border-border border-b">
       <div className="px-block py-related mx-auto max-w-[64rem]">
-        <div className="gap-block flex items-center sm:hidden">
+        <div className="gap-block flex items-center lg:hidden">
           <Link
             to="/"
             className="font-heading text-text hover:text-accent text-lg tracking-[-0.01em]"
@@ -55,15 +61,15 @@ export function Nav({ user }: { user: NavUser | null }): React.ReactElement {
             {menuOpen ? "Close" : "Menu"}
           </Button>
         </div>
-        <FilmSearch className="mt-related w-full sm:hidden" />
-        <div className="sm:gap-block hidden sm:flex sm:items-center">
+        {showSearch && <FilmSearch className="mt-related w-full lg:hidden" />}
+        <div className="lg:gap-block hidden lg:flex lg:items-center">
           <Link
             to="/"
             className="font-heading text-text hover:text-accent text-lg tracking-[-0.01em]"
           >
             pillarboxd
           </Link>
-          <FilmSearch className="max-w-56 flex-1" />
+          {showSearch && <FilmSearch className="max-w-64 min-w-48 flex-1" />}
           <div className="gap-block ml-auto flex items-center justify-end">
             <NavLink to="/activity" className={navLinkClass}>
               Activity
@@ -116,7 +122,7 @@ export function Nav({ user }: { user: NavUser | null }): React.ReactElement {
         {menuOpen && (
           <div
             id="mobile-navigation"
-            className="border-border mt-related border-t sm:hidden"
+            className="border-border mt-related border-t lg:hidden"
           >
             <NavLink
               to="/activity"
